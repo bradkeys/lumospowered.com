@@ -1,0 +1,25 @@
+---
+layout: page
+title: Blog
+---
+
+<h2>Blog</h2>
+
+<div id="posts">
+    <img class="loading-indicator" src="/img/ajax-loader.gif" />
+</div>
+
+<input type="hidden" id="blog_api" value="lumospowered.tumblr.com" />
+
+<template id="post-template">
+    <div class="blog-post" style="padding: 0px 15px;">
+        <h3 class="blog-post-title">
+            <a href="#"></a>
+        </h3>
+        <em><div class="blog-post-date" style="margin-bottom: 5px;"></div></em>
+        <div class="blog-content"></div>
+    </div>
+    <hr />
+</template>
+
+<script src="/js/tumblr.js"></script>

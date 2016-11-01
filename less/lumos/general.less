@@ -1,0 +1,63 @@
+// Prevents flash of unstyled content from AngularJS.
+[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+    display: none;
+}
+
+@font-face {
+    font-family: 'lumos';
+    src: url('/static/fonts/lumos.eot');
+    src: url('/static/fonts/lumos.eot?#iefix') format('embedded-opentype'),
+         url('/static/fonts/lumos.woff') format('woff'),
+         url('/static/fonts/lumos.ttf') format('truetype'),
+         url('/static/fonts/lumos.svg#lumos') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.icon-unity { font-family: 'lumos' !important; }
+.icon-unity:before { content: "\75"; }
+
+html, body {
+    height: 100%;
+    padding: 0;
+}
+
+ul {
+    list-style-type: square;
+}
+
+
+// Bootstrap overrides:
+
+.alert h4 {
+    font-size: inherit;
+    font-weight: 600;
+}
+
+.nav-pills {
+    text-align: center;
+    margin-bottom: @line-height-computed;
+
+    li {
+        display: inline-block;
+        float: none;
+    }
+}
+
+.well { .box-shadow(none); }
+.panel { .box-shadow(none); }
+.modal-footer { margin-top: 0; }
+
+
+// Mixins:
+
+.top-left() {
+    left: 0;
+    top: 0;
+}
+
+.ellipsis() {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

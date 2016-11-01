@@ -1,0 +1,11 @@
+<script>
+	// Displays an alert.
+	function showAlert(message, context) {
+		$('#top-alert')
+			.addClass('alert-' + context)
+			.find('p')
+				.text(message)
+				.end()
+			.show();
+	}
+</script>

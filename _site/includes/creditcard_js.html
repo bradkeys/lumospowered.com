@@ -1,0 +1,92 @@
+<script src="https://js.stripe.com/v2/"></script>
+<script src="/static/js/lib/jquery.payment-1.0.2.js"></script>
+<script>
+	var ccAddCallback = null;
+
+	function creditCardCtrl($scope, $http) {
+		Stripe.setPublishableKey('{{ options.stripe_public_key }}');
+
+		$scope.modal = $('#credit-card-modal');
+		$scope.expiryField = $('#cc-expiry', $scope.modal).payment('formatCardExpiry');
+		$scope.submitButton = $(':submit', $scope.modal);
+
+		$scope.errorMessage = null;
+		$scope.invalidNumber = false;
+		$scope.invalidCVC = false;
+		$scope.invalidExpiry = false;
+
+		// Fetches a token from the Stripe servers.
+		$scope.requestStripeToken = function() {
+			// Reset validations.
+			$scope.errorMessage = null;
+			$scope.invalidNumber = false;
+			$scope.invalidCVC = false;
+			$scope.invalidExpiry = false;
+
+			// Parse expiry month and year.
+			var expiry = $scope.expiryField.payment('cardExpiryVal');
+			$scope.expiryMonth = expiry.month;
+			$scope.expiryYear = expiry.year;
+
+			// Validation:
+
+			if (!$.payment.validateCardNumber($scope.number)) {
+				$scope.invalidNumber = true;
+				return;
+			}
+
+			if (!$.payment.validateCardCVC($scope.cvc)) {
+				$scope.invalidCVC = true;
+				return;
+			}
+
+			if (!$.payment.validateCardExpiry(expiry.month, expiry.year)) {
+				$scope.invalidExpiry = true;
+				return;
+			}
+
+			$scope.submitButton.button('loading');
+
+			var stripeData = {
+				name: $scope.name,
+				number: $scope.number,
+				cvc: $scope.cvc,
+				exp_month: expiry.month,
+				exp_year: expiry.year
+			};
+
+			Stripe.createToken(stripeData, function(status, response) {
+				if (response.error) {
+					$scope.errorMessage = response.error.message;
+					$scope.submitButton.button('reset');
+					$scope.$apply();
+				} else {
+					// Token contains id, last4, and card type.
+					var stripeToken = response['id'];
+					$scope.addCreditCard(stripeToken);
+				}
+			});
+		};
+
+		// Passes token to Lumos to verify with Stripe.
+		$scope.addCreditCard = function(stripeToken) {
+			var data = $.param({ stripe_token: stripeToken });
+
+			$http({
+					method: 'POST',
+					url: '/billing/payment',
+					data: data,
+					headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+				})
+				.success(function(data, status) {
+					if (ccAddCallback) {
+						ccAddCallback(data);
+					}
+
+					showAlert(data.message, data.context);
+					$scope.submitButton.button('reset');
+					$scope.modal.modal('hide');
+				});
+		};
+	}
+</script>
